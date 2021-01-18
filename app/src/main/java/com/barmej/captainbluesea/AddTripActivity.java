@@ -1,15 +1,14 @@
 package com.barmej.captainbluesea;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.barmej.captainbluesea.domain.entity.Trip;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,9 +37,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.barmej.captainbluesea.MapsActivity.DESTINATION;
+import static com.barmej.captainbluesea.MapsActivity.PICKUP;
+
 public class AddTripActivity extends AppCompatActivity {
 
     public static final String TRIP_REF_PATH = "trips";
+    public static final String REQUEST_TYPE = "request_type";
     public static final int REQUEST_PICKUP_LOCATION = 0;
     public static final int REQUEST_DESTINATION_LOCATION = 1;
 
@@ -54,14 +58,11 @@ public class AddTripActivity extends AppCompatActivity {
     private Button mAddTripButton;
     private Date  mTripDate;
     private DatePicker mDatePicker;
-    private ProgressDialog mDialog;
     private ConstraintLayout mConstraintLayout;
     private Trip trip;
-    private AddPointCommunicationInterface pointCommunicationInterface;
-    private Location location;
     private LatLng pickup;
     private LatLng destination;
-
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +78,9 @@ public class AddTripActivity extends AppCompatActivity {
         mTripAvailableSeatTextInputEditText = findViewById(R.id.edit_text_available_seats);
         mAddTripButton = findViewById(R.id.button_add_trip);
         mDatePicker = findViewById(R.id.datePicker);
+        progressBar = findViewById(R.id.progress_bar);
 
         database = FirebaseDatabase.getInstance();
-
-        mDialog = new ProgressDialog(this);
-        mDialog.setIndeterminate(true);
-        mDialog.setTitle(R.string.app_name);
-        mDialog.setMessage(getString(R.string.uploading_Data));
 
         mTripFromCountryTextInputEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -122,13 +119,29 @@ public class AddTripActivity extends AppCompatActivity {
                 }
             }
         });
+    }
 
-
+    private void hideForm(boolean hide) {
+        if (hide) {
+            progressBar.setVisibility(View.VISIBLE);
+            mTripFromCountryTextInputLayout.setVisibility(View.INVISIBLE);
+            mTripToCountryTextInputLayout.setVisibility(View.INVISIBLE);
+            mDatePicker.setVisibility(View.INVISIBLE);
+            mTripAvailableSeatInputTextLayout.setVisibility(View.INVISIBLE);
+            mAddTripButton.setVisibility(View.INVISIBLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
+            mTripFromCountryTextInputLayout.setVisibility(View.VISIBLE);
+            mTripToCountryTextInputLayout.setVisibility(View.VISIBLE);
+            mDatePicker.setVisibility(View.VISIBLE);
+            mTripAvailableSeatInputTextLayout.setVisibility(View.VISIBLE);
+            mAddTripButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void showActivityMap(int requestCode) {
         Intent intent = new Intent(AddTripActivity.this, MapsActivity.class);
-        intent.putExtra("request_type", requestCode);
+        intent.putExtra(REQUEST_TYPE, requestCode);
         startActivityForResult(intent, requestCode);
     }
 
@@ -141,8 +154,7 @@ public class AddTripActivity extends AppCompatActivity {
             Address address;
             switch (requestCode) {
                 case REQUEST_PICKUP_LOCATION:
-                    pickup = data.getParcelableExtra("pickup");
-                   // mTripFromCountryTextInputEditText.setText(pickup.latitude + " , " + pickup.longitude);
+                    pickup = data.getParcelableExtra(PICKUP);
                     try {
                         addresses = geocoder.getFromLocation(pickup.latitude,pickup.longitude,1);
                         address = addresses.get(0);
@@ -152,7 +164,7 @@ public class AddTripActivity extends AppCompatActivity {
                     }
                     break;
                 case REQUEST_DESTINATION_LOCATION:
-                    destination = data.getParcelableExtra("destination");
+                    destination = data.getParcelableExtra(DESTINATION);
                     try {
                         addresses = geocoder.getFromLocation(destination.latitude,destination.longitude,1);
                         address = addresses.get(0);
@@ -166,7 +178,6 @@ public class AddTripActivity extends AppCompatActivity {
     }
 
     public void addTripToFirebase() {
-
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, mDatePicker.getDayOfMonth());
         calendar.set(Calendar.MONTH, mDatePicker.getMonth());
@@ -182,8 +193,7 @@ public class AddTripActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Trip trip = snapshot.getValue(Trip.class);
                 if(trip != null) {
-                    // TODO: there is already a scheulded
-                    Toast.makeText(AddTripActivity.this,"هناك رحلة في نفس الوقت",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddTripActivity.this,R.string.trip_at_the_same_time,Toast.LENGTH_SHORT).show();
                 } else {
                     addTrip(id);
                 }
@@ -194,10 +204,8 @@ public class AddTripActivity extends AppCompatActivity {
 
             }
         });
-
-
-
     }
+
     private void addTrip(String id) {
         trip = new Trip();
 
@@ -212,7 +220,7 @@ public class AddTripActivity extends AppCompatActivity {
         trip.setPickupLng(pickup.longitude);
         trip.setDestinationLat(destination.latitude);
         trip.setDestinationLng(destination.longitude);
-        mDialog.show();
+        hideForm(true);
 
         database.getReference(TRIP_REF_PATH).child(id).setValue(trip).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -222,7 +230,7 @@ public class AddTripActivity extends AppCompatActivity {
                         @Override
                         public void onDismissed(Snackbar transientBottomBar,int event) {
                             super.onDismissed(transientBottomBar,event);
-                            mDialog.dismiss();
+                            hideForm(false);
                             finish();
                         }
                     }).show();
@@ -233,7 +241,6 @@ public class AddTripActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
 }

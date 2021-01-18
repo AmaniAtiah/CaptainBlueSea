@@ -1,4 +1,4 @@
-package com.barmej.captainbluesea;
+package com.barmej.captainbluesea.domain.entity;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -22,10 +22,6 @@ public class Trip  implements Parcelable{
     private double destinationLat;
     private double destinationLng;
 
-
-
-
-
     public Trip(String fromCountry,String toCountry,Date date,int availableSeats,int reservedSeats,String id,String status) {
         this.fromCountry = fromCountry;
         this.toCountry = toCountry;
@@ -37,9 +33,7 @@ public class Trip  implements Parcelable{
     }
 
     public Trip(){
-
     }
-
 
     protected Trip(Parcel in) {
         fromCountry = in.readString();
@@ -176,14 +170,9 @@ public class Trip  implements Parcelable{
     }
 
     public String getFormattedDate() {
-        if (date != null) {
-            String dateFormat = "dd MMM";
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.getDefault());
-            return simpleDateFormat.format(date.getTime());
-           // return DateFormat.getDateInstance(DateFormat.MEDIUM,Locale.getDefault()).format(date.getTime());
-        } else {
-            return "";
-        }
+        String dateFormat = "dd MMM";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.getDefault());
+        return simpleDateFormat.format(date.getTime());
     }
 
     @Override
@@ -212,8 +201,6 @@ public class Trip  implements Parcelable{
     public enum Status {
         AVAILABLE,
         START_TRIP,
-        ARRIVED,
-        FINISH_TRIP
-
+        ARRIVED
     }
 }

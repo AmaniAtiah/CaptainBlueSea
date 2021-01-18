@@ -8,6 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.barmej.captainbluesea.domain.entity.Trip;
+
 import java.util.List;
 
 public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripViewHolder> {
@@ -16,7 +18,6 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListAdapter.TripVi
     }
     private List<Trip> mTripsList;
     private OnTripClickListener mOnTripClickListener;
-
 
     public TripListAdapter(List<Trip> mTripsList,OnTripClickListener mOnTripClickListener) {
         this.mTripsList = mTripsList;

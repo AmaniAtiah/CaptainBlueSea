@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.FrameLayout;
 
-public class MainActivity extends AppCompatActivity {
+import com.barmej.captainbluesea.fragment.TripListFragment;
+
+public class HomeActivity extends AppCompatActivity {
     private FrameLayout frameLayout;
 
     public static Intent getStartIntent(Context context) {
-        return new Intent(context, MainActivity.class);
+        return new Intent(context, HomeActivity.class);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

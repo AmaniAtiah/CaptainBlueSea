@@ -1,7 +1,5 @@
 package com.barmej.captainbluesea;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Patterns;
@@ -29,10 +27,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginBt;
     private ProgressBar progressBar;
 
-    public static Intent getStartIntent(Context context) {
-        return new Intent(context, LoginActivity.class);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,9 +50,8 @@ public class LoginActivity extends AppCompatActivity {
 
         if (firebaseUser != null) {
             hideForm(true);
-            sendUser();
+            sendCaptainToHome();
         }
-
     }
 
     private void loginClicked() {
@@ -78,8 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                          //  String driverId = task.getResult().getUser().getUid();
-                            sendUser();
+                            sendCaptainToHome();
                         } else {
                             hideForm(false);
                             Toast.makeText(LoginActivity.this,R.string.login_error,Toast.LENGTH_SHORT).show();
@@ -88,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
     }
+
     private void hideForm(boolean hide) {
         if (hide) {
             progressBar.setVisibility(View.VISIBLE);
@@ -106,11 +99,9 @@ public class LoginActivity extends AppCompatActivity {
         return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
     }
 
-    private void sendUser() {
-        startActivity(MainActivity.getStartIntent(LoginActivity.this));
+    private void sendCaptainToHome() {
+        startActivity(HomeActivity.getStartIntent(LoginActivity.this));
         finish();
-
     }
-
 
 }

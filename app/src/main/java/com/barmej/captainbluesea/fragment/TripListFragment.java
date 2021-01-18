@@ -1,4 +1,4 @@
-package com.barmej.captainbluesea;
+package com.barmej.captainbluesea.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.barmej.captainbluesea.AddTripActivity;
+import com.barmej.captainbluesea.R;
+import com.barmej.captainbluesea.TripDetailsActivity;
+import com.barmej.captainbluesea.TripListAdapter;
+import com.barmej.captainbluesea.domain.entity.Trip;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,8 +33,6 @@ public class TripListFragment extends Fragment implements TripListAdapter.OnTrip
     private TripListAdapter mTripsListAdapter;
     private ArrayList<Trip> mTrips;
     private Button mAddTripButton;
-    private FrameLayout parentFrameLayout;
-
 
     @Nullable
     @Override
@@ -42,8 +44,6 @@ public class TripListFragment extends Fragment implements TripListAdapter.OnTrip
     public void onViewCreated(@NonNull View view,@Nullable Bundle savedInstanceState) {
         super.onViewCreated(view,savedInstanceState);
 
-        parentFrameLayout = getActivity().findViewById(R.id.frame_layout);
-
         mRecyclerViewTrip = view.findViewById(R.id.recycler_view_trip);
         mAddTripButton = view.findViewById(R.id.add_trip_button);
         mRecyclerViewTrip.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -51,7 +51,6 @@ public class TripListFragment extends Fragment implements TripListAdapter.OnTrip
         mTrips = new ArrayList<>();
         mTripsListAdapter = new TripListAdapter(mTrips, TripListFragment.this);
         mRecyclerViewTrip.setAdapter(mTripsListAdapter);
-
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         firebaseDatabase.getReference(TRIP_REF_PATH).addValueEventListener(new ValueEventListener() {
@@ -63,10 +62,8 @@ public class TripListFragment extends Fragment implements TripListAdapter.OnTrip
                     if(trip.getId().startsWith(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                         mTrips.add(trip);
                     }
-
                 }
                 mTripsListAdapter.notifyDataSetChanged();
-
             }
 
             @Override
@@ -84,12 +81,10 @@ public class TripListFragment extends Fragment implements TripListAdapter.OnTrip
         });
     }
 
-
     @Override
     public void onTripClick(Trip trip) {
         Intent intent = new Intent(getContext(), TripDetailsActivity.class);
-        intent.putExtra(TripDetailsFragmet.TRIP_DATA, trip);
+        intent.putExtra(TripDetailsFragment.TRIP_DATA, trip);
         startActivity(intent);
-
     }
 }

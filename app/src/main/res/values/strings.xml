@@ -23,9 +23,9 @@
     <string name="invalid_password">كلمة المرور قصيرة</string>
     <string name="login_error">لم نستطع تسجيل الدخول باستخدام هذا الايميل وكلمة المرور</string>
     <string name="finished_trip">انتهت الرحلة</string>
-    <string name="uploading_Data">uploading data</string>
-    <string name="add_trip_success">Trip Added Successfully</string>
-    <string name="add_trip_failed">Add Trip Failed</string>
+    <string name="trip_at_the_same_time">هناك رحلة في نفس الوقت</string>
+    <string name="add_trip_success">تم اضافة الرحلة</string>
+    <string name="add_trip_failed">فشل في اضافة الرحلة</string>
     <string name="error_msg_from_country">From Country can\'t be empty</string>
     <string name="error_msg_to_country">to country can\'t be empty</string>
     <string name="error_msg_available_seat">Available seat can\'t be empty</string>

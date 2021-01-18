@@ -1,4 +1,4 @@
-package com.barmej.captainbluesea;
+package com.barmej.captainbluesea.callback;
 
 public interface AddPointCommunicationInterface {
     boolean setPickup();

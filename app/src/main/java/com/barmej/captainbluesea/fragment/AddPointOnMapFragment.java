@@ -1,4 +1,4 @@
-package com.barmej.captainbluesea;
+package com.barmej.captainbluesea.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +11,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.barmej.captainbluesea.AddTripActivity;
+import com.barmej.captainbluesea.R;
+import com.barmej.captainbluesea.callback.AddPointCommunicationInterface;
+
+import static com.barmej.captainbluesea.AddTripActivity.REQUEST_TYPE;
+
 public class AddPointOnMapFragment extends Fragment {
     private ImageView pinView;
     private Button selectPickupButton;
@@ -20,22 +26,13 @@ public class AddPointOnMapFragment extends Fragment {
     private AddPointCommunicationInterface pointCommunicationInterface;
     private int requestType;
 
-//    public static AddPointOnMapFragment getInstance(int requestType) {
-//        Bundle bundle = new Bundle();
-//        bundle.putInt("request_type", requestType);
-//        AddPointOnMapFragment addPointOnMapFragment = new AddPointOnMapFragment();
-//        addPointOnMapFragment.setArguments(bundle);
-//        return addPointOnMapFragment;
-//    }
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            requestType = getArguments().getInt("request_type", 0);
-           // setRequestType(requestType);
-
-
+            requestType = getArguments().getInt(REQUEST_TYPE, 0);
         }
     }
 
@@ -54,9 +51,6 @@ public class AddPointOnMapFragment extends Fragment {
         addPickupButton = view.findViewById(R.id.button_add_pickup);
         selectDestinationButton = view.findViewById(R.id.button_select_destination);
         addDestinationButton = view.findViewById(R.id.button_add_destination);
-
-
-
 
         selectPickupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +97,6 @@ public class AddPointOnMapFragment extends Fragment {
 
         if (pointCommunicationInterface != null && pointCommunicationInterface.setPickup()) {
             hideAllViews();
-           // pinView.setVisibility(View.VISIBLE);
             addPickupButton.setVisibility(View.VISIBLE);
         }
 
@@ -111,28 +104,20 @@ public class AddPointOnMapFragment extends Fragment {
     public void addPickup() {
         if (pointCommunicationInterface != null) {
             pointCommunicationInterface.addPickup();
-      //      pinView.setVisibility(View.GONE);
         }
-      //  getActivity().finish();
-//
     }
-
-
 
     public void selectDestination(){
         if (pointCommunicationInterface != null && pointCommunicationInterface.setDestination()) {
             hideAllViews();
-//            pinView.setVisibility(View.VISIBLE);
             addDestinationButton.setVisibility(View.VISIBLE);
         }
-//
     }
 
     public void addDestination() {
         if (pointCommunicationInterface != null) {
             pointCommunicationInterface.addDestination();
         }
-
     }
 
     public void hideAllViews() {

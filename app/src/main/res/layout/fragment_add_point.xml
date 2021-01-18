@@ -62,7 +62,6 @@
         android:backgroundTint="@color/colorAccent"
         android:textColor="@android:color/white"
         android:visibility="gone"
-        android:layout_margin="20dp"
-        />
+        android:layout_margin="20dp" />
 
 </RelativeLayout>

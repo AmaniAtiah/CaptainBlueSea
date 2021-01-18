@@ -7,22 +7,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.firebase.auth.FirebaseAuth;
+import com.barmej.captainbluesea.callback.CaptainActionDelegates;
+import com.barmej.captainbluesea.callback.StatusCallBack;
+import com.barmej.captainbluesea.domain.TripManager;
+import com.barmej.captainbluesea.domain.entity.Trip;
+import com.barmej.captainbluesea.fragment.TripDetailsFragment;
 
-import static com.barmej.captainbluesea.TripDetailsFragmet.TRIP_DATA;
+import static com.barmej.captainbluesea.fragment.TripDetailsFragment.TRIP_DATA;
 
 public class TripDetailsActivity extends AppCompatActivity {
 
     private FrameLayout frameLayout;
-    private CaptianActionDelegates captianActionDelegates;
-    private TripDetailsFragmet tripDetailsFragmet;
+    private CaptainActionDelegates captainActionDelegates;
+    private TripDetailsFragment tripDetailsFragment;
     private Trip trip;
     private StatusCallBack statusCallBack = getStatusCallBack();
-    private LocationCallback locationCallback;
-    private FusedLocationProviderClient location;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,47 +35,32 @@ public class TripDetailsActivity extends AppCompatActivity {
         }
 
         frameLayout = findViewById(R.id.frame_layout);
-        tripDetailsFragmet = new TripDetailsFragmet();
+        tripDetailsFragment = new TripDetailsFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(TRIP_DATA, trip);
-        tripDetailsFragmet.setArguments(bundle);
-        setFragment(tripDetailsFragmet);
+        tripDetailsFragment.setArguments(bundle);
+        setFragment(tripDetailsFragment);
 
         getCaptainActionDelegates();
-        tripDetailsFragmet.setCaptianActionDelegates(captianActionDelegates);
-
-
+        tripDetailsFragment.setCaptainActionDelegates(captainActionDelegates);
     }
-//
+
     private StatusCallBack getStatusCallBack() {
         return new StatusCallBack() {
             @Override
             public void onUpdate(Trip trip) {
                 String tripStatus = trip.getStatus();
-
                 if (tripStatus.equals(Trip.Status.AVAILABLE.name())) {
-                    tripDetailsFragmet.updateWithStatus(trip);
+                    tripDetailsFragment.updateWithStatus(trip);
                 } else if (tripStatus.equals(Trip.Status.START_TRIP.name())){
-                    tripDetailsFragmet.showOnTripView(trip);
-                    tripDetailsFragmet.checkLocationPermissionAndSetUpUserLocation();
+                    tripDetailsFragment.showOnTripView(trip);
+                    tripDetailsFragment.checkLocationPermissionAndSetUpUserLocation();
                 } else if (tripStatus.equals(Trip.Status.ARRIVED.name())) {
-                    tripDetailsFragmet.showArrivedScreen(trip);
+                    tripDetailsFragment.showArrivedScreen(trip);
                 }
             }
         };
     }
-
-//    private void showArrivedScreen(Trip trip) {
-//        tripDetailsFragmet.reset();
-//        tripDetailsFragmet.updateWithStatus(trip);
-//    }
-//
-//    private void showOnTripView(Trip trip) {
-//        tripDetailsFragmet.setCurrentMarker(new LatLng(trip.getCurrentLat(), trip.getCurrentLng()));
-//        tripDetailsFragmet.setDestinationMarker(new LatLng(trip.getDestinationLat(), trip.getDestinationLng()));
-//        tripDetailsFragmet.setPickUpMarker(new LatLng(trip.getPickupLat(), trip.getPickupLng()));
-//        tripDetailsFragmet.updateWithStatus(trip);
-//    }
 
     @Override
     protected void onResume() {
@@ -85,48 +69,31 @@ public class TripDetailsActivity extends AppCompatActivity {
     }
 
     private void getCaptainActionDelegates() {
-        captianActionDelegates = new CaptianActionDelegates() {
+        captainActionDelegates = new CaptainActionDelegates() {
             @Override
             public void startTrip() {
-                System.out.println("START TRIP");
                 TripManager.getInstance().updateTrip();
-
-            }
-
-            @Override
-            public void updateLocation() {
-                // TODO: update trip using TripManager
             }
 
             @Override
             public void arrivedTrip() {
                 TripManager.getInstance().updateTripToArrived();
-
             }
 
-            @Override
-            public void goOffline() {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(LoginActivity.getStartIntent(TripDetailsActivity.this));
-                finish();
-            }
         };
     }
-
 
     public void setFragment(Fragment fragment) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(frameLayout.getId(), fragment);
         fragmentTransaction.commit();
-
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         TripManager.getInstance().stopListeningToStatus();
-        tripDetailsFragmet.stopLocationUpdates();
+        tripDetailsFragment.stopLocationUpdates();
     }
-
 
 }

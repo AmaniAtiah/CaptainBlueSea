@@ -1,4 +1,4 @@
-package com.barmej.captainbluesea;
+package com.barmej.captainbluesea.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.barmej.captainbluesea.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
@@ -46,29 +47,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view,@Nullable Bundle savedInstanceState) {
         super.onViewCreated(view,savedInstanceState);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-      //  if (mapFragment != null) {
         mapFragment.getMapAsync(this);
-            //checkLocationPermissionAndSetUpUserLocation();
-      //  }
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         checkLocationPermissionAndSetUpUserLocation();
-
     }
 
     public void checkLocationPermissionAndSetUpUserLocation() {
         if (ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             setUpUserLocation();
-
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION}
                     , REQUEST_LOCATION_PERMISSION);
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,@NonNull String[] permissions,@NonNull int[] grantResults) {
         if (requestCode == REQUEST_LOCATION_PERMISSION) {

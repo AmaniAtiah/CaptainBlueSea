@@ -1,4 +1,4 @@
-package com.barmej.captainbluesea;
+package com.barmej.captainbluesea.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -18,6 +18,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.barmej.captainbluesea.R;
+import com.barmej.captainbluesea.callback.CaptainActionDelegates;
+import com.barmej.captainbluesea.domain.TripManager;
+import com.barmej.captainbluesea.domain.entity.Trip;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -36,9 +40,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 
-public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
+public class TripDetailsFragment extends Fragment implements OnMapReadyCallback {
     private static final int REQUEST_LOCATION_PERMISSION = 1;
-    private static final String INITIAL_STATUS_EXTRA = "INITIAL_STATUS_EXTRA";
     public static final String TRIP_DATA = "trip_data";
     private TextView mDateTextView;
     private TextView mFromCountryTextView;
@@ -49,10 +52,8 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private Button startButton;
     private Button arrivedButton;
-    private Button logoutButton;
-    private CaptianActionDelegates captianActionDelegates;
+    private CaptainActionDelegates captainActionDelegates;
     private Trip trip;
-    private StatusCallBack statusCallBack;
     private TextView mFinishTripTextView;
     private Marker currentMarker;
     private Marker destinationMarker;
@@ -77,16 +78,8 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view,@Nullable Bundle savedInstanceState) {
         super.onViewCreated(view,savedInstanceState);
         mMapView = view.findViewById(R.id.map_view);
-      //  if (mMapView != null) {
-            mMapView.onCreate(savedInstanceState);
-            mMapView.getMapAsync(this);
-
-            //        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_view);
-//        if (mapFragment != null) {
-//            mapFragment.getMapAsync(this);
-//        }
-       // }
-
+        mMapView.onCreate(savedInstanceState);
+        mMapView.getMapAsync(this);
 
         mDateTextView = view.findViewById(R.id.text_view_trip_date);
         mFromCountryTextView = view.findViewById(R.id.text_view_from_country);
@@ -95,9 +88,7 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
         mReservedSeatTextView = view.findViewById(R.id.text_view_reserved_seat);
         startButton = view.findViewById(R.id.start_trip_button);
         arrivedButton = view.findViewById(R.id.arrived_button);
-        logoutButton = view.findViewById(R.id.logout_button);
         mFinishTripTextView = view.findViewById(R.id.text_view_finish_trip);
-
 
         if (trip != null) {
             mDateTextView.setText(trip.getFormattedDate());
@@ -110,36 +101,17 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("BUTTON CLICKED");
-                captianActionDelegates.startTrip();
-
+                captainActionDelegates.startTrip();
             }
         });
 
         arrivedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                captianActionDelegates.arrivedTrip();
+                captainActionDelegates.arrivedTrip();
 
             }
         });
-
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                captianActionDelegates.goOffline();
-            }
-        });
-
-
-
-        statusCallBack  = new StatusCallBack() {
-            @Override
-            public void onUpdate(Trip trip) {
-            //    updateWithStatus(trip);
-                // Update the UI to reflect new trip data or status
-            }
-        };
 
     }
 
@@ -155,28 +127,6 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
         updateWithStatus(trip);
     }
 
-    private void selectStartTrip() {
-
-   // if (captianActionDelegates != null ) {
-     //   captianActionDelegates.startTrip();
-//        startButton.setVisibility(View.GONE);
-//        arrivedButton.setVisibility(View.VISIBLE);
-//
-//            System.out.println("CAPTAIN NOT NULL");
-//        } else {
-//            System.out.println("CAPTAIN IS NULL");
-//        }
-    }
-
-    private void selectArrivedTrip() {
-      // if (captianActionDelegates != null ) {
-        //    captianActionDelegates.arrivedTrip();
-//            startButton.setVisibility(View.GONE);
-//            arrivedButton.setVisibility(View.GONE);
-//
-//        }
-    }
-
     public void updateWithStatus(Trip trip) {
         String tripStatus = trip.getStatus();
         if (tripStatus.equals(Trip.Status.AVAILABLE.name())) {
@@ -189,7 +139,7 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
 
         } else if (tripStatus.equals(Trip.Status.ARRIVED.name())) {
             hideAllViews();
-            logoutButton.setVisibility(View.VISIBLE);
+            mFinishTripTextView.setVisibility(View.VISIBLE);
         }
         mAvailableSeatTextView.setText(String.valueOf(trip.getAvailableSeats()));
         mReservedSeatTextView.setText(String.valueOf(trip.getReservedSeats()));
@@ -198,16 +148,12 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
     private void hideAllViews() {
         startButton.setVisibility(View.GONE);
         arrivedButton.setVisibility(View.GONE);
-        logoutButton.setVisibility(View.GONE);
         mFinishTripTextView.setVisibility(View.GONE);
-
-
+        mFinishTripTextView.setVisibility(View.GONE);
     }
 
-
-
-    public void setCaptianActionDelegates(CaptianActionDelegates captianActionDelegates) {
-        this.captianActionDelegates = captianActionDelegates;
+    public void setCaptainActionDelegates(CaptainActionDelegates captainActionDelegates) {
+        this.captainActionDelegates = captainActionDelegates;
     }
 
     public void checkLocationPermissionAndSetUpUserLocation() {
@@ -259,16 +205,13 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
             }
         });
 
-
         trackAndSendLocationUpdates();
-
     }
 
     @SuppressLint("MissingPermission")
     private void trackAndSendLocationUpdates() {
 
         if (locationCallback == null) {
-
             location = LocationServices.getFusedLocationProviderClient(getContext());
 
             LocationRequest locationRequest = new LocationRequest();
@@ -280,19 +223,13 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
                 public void onLocationResult(LocationResult locationResult) {
                     super.onLocationResult(locationResult);
                     Location lastLocation = locationResult.getLastLocation();
-
-                    System.out.println("Location:" + lastLocation.getLatitude());
-
                     TripManager.getInstance().updateCurrentLocation(lastLocation.getLatitude(), lastLocation.getLongitude());
                 }
             };
 
-
             location.requestLocationUpdates(locationRequest, locationCallback, null);
-
         }
     }
-
 
     public void setCurrentMarker(LatLng target) {
         if (mMap == null)
@@ -341,8 +278,7 @@ public class TripDetailsFragmet extends Fragment implements OnMapReadyCallback {
         }
     }
 
-
-    void stopLocationUpdates() {
+    public void stopLocationUpdates() {
         if (location != null && locationCallback != null) {
             location.removeLocationUpdates(locationCallback);
             locationCallback = null;

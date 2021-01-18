@@ -2,48 +2,39 @@ package com.barmej.captainbluesea;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
+import com.barmej.captainbluesea.callback.AddPointCommunicationInterface;
+import com.barmej.captainbluesea.fragment.AddPointOnMapFragment;
+import com.barmej.captainbluesea.fragment.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import static com.barmej.captainbluesea.AddTripActivity.REQUEST_TYPE;
+
 public class MapsActivity extends AppCompatActivity {
+    public static final String PICKUP = "pickup";
+    public static final String DESTINATION = "destination";
     private MapFragment mapsFragment;
-    private FrameLayout frameLayout;
     private AddPointOnMapFragment addPointOnMapFragment;
     private AddPointCommunicationInterface pointCommunicationInterface;
-    private TripDetailsFragmet tripDetailsFragmet;
 
     private LatLng pickUpLatLng;
     private LatLng destinationLatLng;
-//    private Trip trip;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        frameLayout = findViewById(R.id.frame_layout);
 
         FragmentManager manager = getSupportFragmentManager();
 
         mapsFragment = (MapFragment) manager.findFragmentById(R.id.map_container_fragment);
         addPointOnMapFragment = (AddPointOnMapFragment) manager.findFragmentById(R.id.add_point);
 
-        tripDetailsFragmet = new TripDetailsFragmet();
-
-
-        addPointOnMapFragment.setRequestType(getIntent().getIntExtra("request_type", 0));
+        addPointOnMapFragment.setRequestType(getIntent().getIntExtra(REQUEST_TYPE, 0));
         initListenerDelegates();
         addPointOnMapFragment.setActionDelegates(pointCommunicationInterface);
-
-
-       // mapsFragment.checkLocationPermissionAndSetUpUserLocation();
-
-
-
     }
 
     private void initListenerDelegates() {
@@ -71,7 +62,7 @@ public class MapsActivity extends AppCompatActivity {
             @Override
             public void addPickup() {
                 Intent intent = new Intent();
-                intent.putExtra("pickup",pickUpLatLng);
+                intent.putExtra(PICKUP,pickUpLatLng);
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -79,7 +70,7 @@ public class MapsActivity extends AppCompatActivity {
             @Override
             public void addDestination() {
                 Intent intent = new Intent();
-                intent.putExtra("destination",destinationLatLng);
+                intent.putExtra(DESTINATION,destinationLatLng);
                 setResult(RESULT_OK, intent);
                 finish();
 
@@ -87,25 +78,4 @@ public class MapsActivity extends AppCompatActivity {
         };
     }
 
-    public void reset() {
-        destinationLatLng = null;
-        pickUpLatLng = null;
-    }
-
-
-
-//
-//    private void addpickup(LatLng pickup) {
-//        trip = new Trip();
-//        trip.setPickupLat(pickup.latitude);
-//
-//        finish();
-//    }
-
-    public void setFragment(Fragment fragment) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(frameLayout.getId(), fragment);
-        fragmentTransaction.commit();
-
-    }
 }
