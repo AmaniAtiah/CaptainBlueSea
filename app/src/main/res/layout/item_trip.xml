@@ -26,51 +26,44 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-
         <TextView
             android:id="@+id/text_view_from_country"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/background_capsule"
             android:drawableStart="@drawable/ic_start_point_gray_24dp"
             android:drawablePadding="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
             app:layout_constraintEnd_toStartOf="@+id/imageView2"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_trip_date"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Kuwait" />
 
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/text_view_from_country"
             app:layout_constraintEnd_toEndOf="@+id/text_view_trip_date"
             app:layout_constraintStart_toStartOf="@+id/text_view_trip_date"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_trip_date"
+            app:layout_constraintTop_toTopOf="@+id/text_view_to_country"
             app:srcCompat="@drawable/ic_linear_scale_gray_24dp" />
 
         <TextView
             android:id="@+id/text_view_to_country"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/background_capsule"
             android:drawableStart="@drawable/ic_end_point_gray_24dp"
             android:drawablePadding="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/imageView2"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_trip_date"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Morocco" />
 
 
@@ -86,7 +79,7 @@
             app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline3">
+          >
 
             <TextView
                 android:id="@+id/text_view_available_seat"

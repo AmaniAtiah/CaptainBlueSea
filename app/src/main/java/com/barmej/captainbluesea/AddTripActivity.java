@@ -3,6 +3,8 @@ package com.barmej.captainbluesea;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,8 +17,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentManager;
 
+import com.barmej.captainbluesea.callback.AddPointCommunicationInterface;
 import com.barmej.captainbluesea.domain.entity.Trip;
+import com.barmej.captainbluesea.fragment.AddPointOnMapFragment;
+import com.barmej.captainbluesea.fragment.MapFragment;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -48,7 +57,6 @@ public class AddTripActivity extends AppCompatActivity {
     public static final int REQUEST_DESTINATION_LOCATION = 1;
 
     private FirebaseDatabase database;
-
     private TextInputLayout mTripFromCountryTextInputLayout;
     private TextInputLayout mTripToCountryTextInputLayout;
     private TextInputLayout mTripAvailableSeatInputTextLayout;
@@ -63,6 +71,8 @@ public class AddTripActivity extends AppCompatActivity {
     private LatLng pickup;
     private LatLng destination;
     private ProgressBar progressBar;
+    private Button addPickupButton;
+    private Button addDestinationButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,26 +89,22 @@ public class AddTripActivity extends AppCompatActivity {
         mAddTripButton = findViewById(R.id.button_add_trip);
         mDatePicker = findViewById(R.id.datePicker);
         progressBar = findViewById(R.id.progress_bar);
+        addPickupButton = findViewById(R.id.add_pickup_button);
+        addDestinationButton = findViewById(R.id.add_destination_button);
 
         database = FirebaseDatabase.getInstance();
 
-        mTripFromCountryTextInputEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        addPickupButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFocusChange(View view,boolean hasFocus) {
-                if (hasFocus) {
-                    showActivityMap(REQUEST_PICKUP_LOCATION);
-                    view.clearFocus();
-                }
+            public void onClick(View v) {
+                showActivityMap(REQUEST_PICKUP_LOCATION);
             }
         });
 
-        mTripToCountryTextInputEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        addDestinationButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFocusChange(View view,boolean hasFocus) {
-                if (hasFocus) {
-                    showActivityMap(REQUEST_DESTINATION_LOCATION);
-                    view.clearFocus();
-                }
+            public void onClick(View v) {
+                showActivityMap(REQUEST_DESTINATION_LOCATION);
             }
         });
 
@@ -216,10 +222,13 @@ public class AddTripActivity extends AppCompatActivity {
         trip.setAvailableSeats(Integer.parseInt(mTripAvailableSeatTextInputEditText.getText().toString()));
         trip.setId(id);
         trip.setStatus(Trip.Status.AVAILABLE.name());
-        trip.setPickupLat(pickup.latitude);
-        trip.setPickupLng(pickup.longitude);
-        trip.setDestinationLat(destination.latitude);
-        trip.setDestinationLng(destination.longitude);
+        if (mTripFromCountryTextInputEditText == null && mTripToCountryTextInputEditText == null) {
+            trip.setPickupLat(pickup.latitude);
+            trip.setPickupLng(pickup.longitude);
+            trip.setDestinationLat(destination.latitude);
+            trip.setDestinationLng(destination.longitude);
+        }
+
         hideForm(true);
 
         database.getReference(TRIP_REF_PATH).child(id).setValue(trip).addOnCompleteListener(new OnCompleteListener<Void>() {

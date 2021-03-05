@@ -26,8 +26,6 @@ public class AddPointOnMapFragment extends Fragment {
     private AddPointCommunicationInterface pointCommunicationInterface;
     private int requestType;
 
-
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +48,7 @@ public class AddPointOnMapFragment extends Fragment {
         selectPickupButton = view.findViewById(R.id.button_select_pickup);
         addPickupButton = view.findViewById(R.id.button_add_pickup);
         selectDestinationButton = view.findViewById(R.id.button_select_destination);
-        addDestinationButton = view.findViewById(R.id.button_add_destination);
+        addDestinationButton = view.findViewById(R.id.add_destination_button);
 
         selectPickupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +88,6 @@ public class AddPointOnMapFragment extends Fragment {
         } else {
             selectDestinationButton.setVisibility(View.VISIBLE);
         }
-
     }
 
     public void selectPickup() {

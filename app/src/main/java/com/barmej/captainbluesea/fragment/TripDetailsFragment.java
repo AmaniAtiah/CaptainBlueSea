@@ -71,7 +71,6 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,@Nullable ViewGroup container,@Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_trip_details,container,false);
-
     }
 
     @Override
@@ -109,10 +108,8 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
             @Override
             public void onClick(View v) {
                 captainActionDelegates.arrivedTrip();
-
             }
         });
-
     }
 
     public void showArrivedScreen(Trip trip) {
@@ -156,20 +153,21 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
         this.captainActionDelegates = captainActionDelegates;
     }
 
-    public void checkLocationPermissionAndSetUpUserLocation() {
-        if (ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            setUpUserLocation();
-        } else {
-            ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION}
-                    , REQUEST_LOCATION_PERMISSION);
-        }
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         checkLocationPermissionAndSetUpUserLocation();
+    }
+
+    public void checkLocationPermissionAndSetUpUserLocation() {
+        if (ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            setUpUserLocation();
+            mMap.setMyLocationEnabled(true);
+        } else {
+            ActivityCompat.requestPermissions(getActivity(), new String[] {Manifest.permission.ACCESS_FINE_LOCATION}
+                    , REQUEST_LOCATION_PERMISSION);
+        }
     }
 
     @Override
@@ -179,7 +177,6 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
                 setUpUserLocation();
             } else {
                 Toast.makeText(getActivity(),R.string.location_permission_needed,Toast.LENGTH_SHORT).show();
-
             }
         } else {
             super.onRequestPermissionsResult(requestCode,permissions,grantResults);
@@ -200,7 +197,6 @@ public class TripDetailsFragment extends Fragment implements OnMapReadyCallback 
                     LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
                     CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f);
                     mMap.moveCamera(update);
-
                 }
             }
         });

@@ -75,7 +75,6 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             hideForm(false);
                             Toast.makeText(LoginActivity.this,R.string.login_error,Toast.LENGTH_SHORT).show();
-
                         }
                     }
                 });

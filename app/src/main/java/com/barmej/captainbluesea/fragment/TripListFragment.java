@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +35,8 @@ public class TripListFragment extends Fragment implements TripListAdapter.OnTrip
     private TripListAdapter mTripsListAdapter;
     private ArrayList<Trip> mTrips;
     private Button mAddTripButton;
+    private TextView youDidntAddAnyTrip;
+    private Trip trip;
 
     @Nullable
     @Override
@@ -47,6 +51,7 @@ public class TripListFragment extends Fragment implements TripListAdapter.OnTrip
         mRecyclerViewTrip = view.findViewById(R.id.recycler_view_trip);
         mAddTripButton = view.findViewById(R.id.add_trip_button);
         mRecyclerViewTrip.setLayoutManager(new LinearLayoutManager(getContext()));
+        youDidntAddAnyTrip = view.findViewById(R.id.you_didnt_add_any_trip);
 
         mTrips = new ArrayList<>();
         mTripsListAdapter = new TripListAdapter(mTrips, TripListFragment.this);
@@ -58,10 +63,23 @@ public class TripListFragment extends Fragment implements TripListAdapter.OnTrip
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 mTrips.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Trip trip = dataSnapshot.getValue(Trip.class);
-                    if(trip.getId().startsWith(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                        mTrips.add(trip);
+                     trip = dataSnapshot.getValue(Trip.class);
+                    String tripStatus = trip.getStatus();
+                    if (trip != null) {
+                        if (trip.getId().startsWith(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            if (tripStatus.equals(Trip.Status.AVAILABLE.name()) ||
+                                    tripStatus.equals(Trip.Status.START_TRIP.name())) {
+                                mTrips.add(trip);
+                                youDidntAddAnyTrip.setVisibility(View.GONE);
+                                mRecyclerViewTrip.setVisibility(View.VISIBLE);
+                            } else if (tripStatus.equals(Trip.Status.ARRIVED.name())) {
+                                mRecyclerViewTrip.setVisibility(View.GONE);
+                            }
+                        }
                     }
+                }
+                if (trip == null) {
+                    youDidntAddAnyTrip.setVisibility(View.VISIBLE);
                 }
                 mTripsListAdapter.notifyDataSetChanged();
             }
